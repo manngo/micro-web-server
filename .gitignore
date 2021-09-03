@@ -1,0 +1,5 @@
+pyinstaller/
+src/__pycache__/
+src/..pyinstaller/
+bin/
+.DS_Store
