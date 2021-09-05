@@ -22,7 +22,7 @@ The GUI version of the server looks like this:
 
 	<img src="misc/gui-windows.png" width="50%" alt="GUI Windows">
 
-1. Enter the __Path__ of the directory you wish to be served. You can use the `[...]` button to select the directory.
+1. Enter the __Path__ of the directory you wish to be served. You can use the __Select …__ button to select the directory.
 2. The __Host__ defaults to `localhost`. Enter an alternative name or IP address if you have one.
 3. The __Port__ defaults to `8000`. Choose another if you wish. You probably can’t select a number below `1024` without privileges.
 
