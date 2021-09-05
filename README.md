@@ -12,7 +12,15 @@ There are two versions of the server, both for MacOS and Windows.
 
 ## GUI Usage
 
-![GUI Window](misc/gui.png)
+The GUI version of the server looks like this:
+
+- MacOS
+
+	<img src="misc/gui-mac.png" width="50%" alt="GUI MacOS">
+
+- Windows
+
+	<img src="misc/gui-windows.png" width="50%" alt="GUI Windows">
 
 1. Enter the __Path__ of the directory you wish to be served. You can use the `[...]` button to select the directory.
 2. The __Host__ defaults to `localhost`. Enter an alternative name or IP address if you have one.

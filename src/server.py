@@ -1,3 +1,9 @@
+#	References
+#	https://python.readthedocs.io/en/v2.7.2/library/simplehttpserver.html
+#	https://docs.python.org/3/library/http.server.html
+#	https://stackabuse.com/serving-files-with-pythons-simplehttpserver-module/
+
+
 import http.server, socketserver, os
 import threading
 
