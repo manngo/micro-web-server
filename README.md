@@ -26,7 +26,11 @@ The GUI version of the server looks like this:
 2. The __Host__ defaults to `localhost`. Enter an alternative name or IP address if you have one.
 3. The __Port__ defaults to `8000`. Choose another if you wish. You probably can’t select a number below `1024` without privileges.
 
-When you start, the __Start__ button will turn into __Stop_.
+When you start, the __Start__ button will turn into __Stop__.
+
+When ever you change any of the fields, they will be saved for next time. This uses a JSON file in ~/micro-web-server/prefs.json.
+
+You will also see a link to launch the site in your default browser.
 
 ##	Usage
 
