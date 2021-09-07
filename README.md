@@ -28,27 +28,42 @@ The GUI version of the server looks like this:
 
 When you start, the __Start__ button will turn into __Stop__.
 
-When ever you change any of the fields, they will be saved for next time. This uses a JSON file in ~/micro-web-server/prefs.json.
+When ever you change any of the fields, they will be saved for next time. This uses a JSON file in `~/micro-web-server/prefs.json`.
 
 You will also see a link to launch the site in your default browser.
 
-##	Usage
+##	CLI Usage
 
-General:
+If you prefer to use the command line version, its usage is below:
 
-- __MacOS__: `PythonWebServer --directory="…" --host=… --port=…`
-- __Windows__: `PythonWebServer.exe --directory="…" --host=… --port=…`
+- __MacOS__: `PythonWebServer --directory="…" --host=… --port=…` --go
+- __Windows__: `PythonWebServer.exe --directory="…" --host=… --port=…` --go
 
-The `--directory`, `--host` and `--port` parameters are all optional. Here are the options and their defaults:
+The `--directory`, `--host`, `--port`, and `--go` parameters are all optional. Here are the options and their defaults:
 
-| Short | Full         | Meaning            | Default             |
-|-------|--------------|--------------------|---------------------|
-| -h    | --help=      | Show Help          |                     |
-| -d    | --directory= | Directory to Serve | (current directory) |
-|       | --host=      | Host URL           | localhost           |
-| -p    | --port=      | Port Number        | 8000                |
+| Short | Full         | Meaning             | Original Default    |
+|-------|--------------|---------------------|---------------------|
+| -h    | --help=      | Show Help           |                     |
+| -d    | --directory= | Directory to Serve  | (current directory) |
+|       | --host=      | Host URL            | localhost           |
+| -p    | --port=      | Port Number         | 8000                |
+| -g    | --go         | Open in Web Browser |                     |
 
 Although not always required, its generally better to put the directory inside "quotes", to avoid problems with spaces.
+
+Once you have launched __MicroWebServer__, the directory, host, and port settings are saved, and they will be the defaults next time.
+
+If you include the __go__ option (`-g` or `--go`), your site will open up in your default web browser, after a delay of a few seconds.
+
+## TODO
+
+1. Save named project settings:
+
+	- CLI: --use "named project"
+	- GUI: Combo Box
+
+2. Tabbed Interface with About etc
+
 
 ## E&OE
 

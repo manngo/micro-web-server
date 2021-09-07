@@ -6,60 +6,33 @@
 #	https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling
 #	https://www.pythontutorial.net/tkinter/ttk-style/
 
-from server import startServer, stopServer
+#	Imports
+from server import startServer, stopServer, loadPrefs, savePrefs, initPrefs
 
 import os, sys, webbrowser, json
 
 import tkinter
 from tkinter.filedialog import askdirectory
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 from tkinter import ttk
 
-prefsPath = os.path.join(os.path.expanduser('~'),'.micro-web-server','prefs.json')
-
-oldpath = os.getcwd()
-
-def loadPrefs(defaults):
-	data = {}
-	if os.path.isfile(prefsPath):
-		jsonFile = open(prefsPath,'r')
-		try:
-			data = json.load(jsonFile)
-		except Exception:
-			pass
-		jsonFile.close()
-	print(data)
-	return data
-
-def savePrefs(path=None,host=None,port=None):
-	global prefs
-	if path: prefs['path'] = path
-	if host: prefs['host'] = host
-	if port: prefs['port'] = port
-
-	print(prefs)
-	os.makedirs(os.path.dirname(prefsPath),exist_ok=True)
-	jsonFile = open(prefsPath,'w')
-	json.dump(prefs,jsonFile)
-	jsonFile.close()
-	return prefs
-
-defaults = {'path': oldpath, 'host': 'localhost', 'port': 8000}
-prefs = { **defaults, **loadPrefs(defaults) }
-print(prefs)
-savePrefs()
+#	Functions
+def getProjects():
+	saved = [k for k in prefs['saved']]
+	projects = ['Default',*saved]
+	return (saved,projects)
 
 def start():
 	global startButton, launchLink, prefs
 	startButton.config(text='Stop',command=stop)
-	startButton
+	#startButton
 	path = pathText.get()
 	host = hostText.get()
 	port = int(portText.get())
-	prefs = {'path': path, 'host': host, 'port': port}
+	#prefs = {'path': path, 'host': host, 'port': port}
 	os.chdir(path)
 	startServer(path,host,port,True);
-	savePrefs()
+	#savePrefs()
 	launchLink.config(text='http://{}:{}'.format(host,port))
 
 def stop():
@@ -83,6 +56,59 @@ def launchURL(event):
 	port = int(portText.get())
 	webbrowser.open('http://{}:{}'.format(host,port))
 
+def updateProjects():
+	global saved, projects, projectsCombo
+	saved,projects = getProjects()
+	projectsCombo['values'] = projects
+
+def saveAsProject(name=None):
+	#global prefs, saved, projectsCombo
+	if not name: name = simpledialog.askstring('Save Project','Save Project as:')
+	#if name==None: print('None')
+	#if name=='': print('empty string')
+	#if name: print(f'Result: {name}')
+	if name.lower() in saved:
+		del prefs['saved'][saved[name.lower()]]
+	prefs['saved'][name] = {'path': pathText.get(), 'host': hostText.get(), 'port': int(portText.get())}
+	savePrefs()
+	updateProjects()
+	projectsCombo.current(projectsCombo['values'].index(name))
+
+def saveProject():
+	saveAsProject(projectsCombo.get())
+
+def deleteProject():
+	if projectsCombo.current() == 0: return	#	Can’t delete default
+	name = projectsCombo.get()
+	if not messagebox.askyesno(f'Delete {name}',f'Are you sure you want to delete {name}?'): return
+	if name in saved:
+		del prefs['saved'][name]
+	savePrefs()
+	updateProjects()
+	projectsCombo.current(0)
+
+def loadProject():
+	if projectsCombo.current() == 0:
+		path,host,port = (prefs['default'][k] for k in ('path','host','port'))
+	else:
+		project = projectsCombo.get();
+		path,host,port = (prefs['saved'][project][k] for k in ('path','host','port'))
+	pathText.delete(0,"end")
+	pathText.insert(0,path)
+	hostText.delete(0,"end")
+	hostText.insert(0,host)
+	portText.delete(0,"end")
+	portText.insert(0,port)
+
+def readProject(event):
+	loadProject()
+	pass
+
+#	Initialise
+oldpath = os.getcwd()
+prefs = initPrefs()
+saved,projects = getProjects()
+
 #	Window
 window = tkinter.Tk()
 window.configure(background="#ECECEC", padx=12, pady=12)
@@ -100,42 +126,65 @@ ttk.Style().configure('link.TLabel',foreground='#133796')
 headingLabel = ttk.Label(window, text="Micro Web Server", font=("Source Sans Pro",24))
 headingLabel.grid(columnspan=2,row=0, sticky='WE')
 
+#	Projects
+projectsLabel = ttk.Label(window, text="Projects")
+projectsLabel.grid(column=0,row=1, sticky='W')
+projectsCombo = ttk.Combobox(window)
+projectsCombo['state'] = 'readonly'
+updateProjects()
+projectsCombo.current(0)
+projectsCombo.grid(columnspan=3, column=0,row=2, sticky='W')
+projectsCombo.bind('<<ComboboxSelected>>',readProject)
+
+saveButton = ttk.Button(window,text='Save', command=saveProject)
+saveButton.grid(column=2,row=2, sticky='E')
+saveAsButton = ttk.Button(window,text='Save As …', command=saveAsProject)
+saveAsButton.grid(column=3,row=2, sticky='E')
+deleteButton = ttk.Button(window,text='Delete …', command=deleteProject)
+deleteButton.grid(column=4,row=2, sticky='E')
+
+
 #	Path
 pathLabel = ttk.Label(window, text="Path")
-pathLabel.grid(column=0,row=1, sticky='W')
+pathLabel.grid(column=0,row=3, sticky='W')
 pathText = ttk.Entry(window)
-pathText.insert(0,prefs['path'])
+pathText.insert(0,prefs['default']['path'])
 pathText.bind('<FocusOut>', lambda event: savePrefs(path=event.widget.get()))
-pathText.grid(columnspan=4,row=2, sticky='WE')
+pathText.grid(columnspan=4,row=4, sticky='WE')
 
 pathButton = ttk.Button(window,text='Select …', command=setFolder)
-pathButton.grid(column=4,row=2, sticky='E')
+pathButton.grid(column=4,row=4, sticky='E')
+
+
+print(prefs)
+print(prefs['default'])
+print(prefs['default']['path'])
 
 #	Host
 hostLabel = ttk.Label(window, text="Host")
-hostLabel.grid(column=0,row=3, sticky='W')
+hostLabel.grid(column=0,row=5, sticky='W')
 hostText = ttk.Entry(window)
-hostText.insert(0,prefs['host'])
+hostText.insert(0,prefs['default']['host'])
 hostText.bind('<FocusOut>', lambda event: savePrefs(host=event.widget.get()))
-hostText.grid(columnspan=2, column=0, row=4, sticky='W')
+hostText.grid(columnspan=2, column=0, row=6, sticky='W')
 
 #	Port
 portLabel = ttk.Label(window, text="Port")
-portLabel.grid(column=2,row=3, sticky='W',padx=8,pady=2)
+portLabel.grid(column=2,row=5, sticky='W',padx=8,pady=2)
 portText = ttk.Entry(window)
-portText.insert(0,prefs['port'])
+portText.insert(0,prefs['default']['port'])
 portText.bind('<FocusOut>', lambda event: savePrefs(port=int(event.widget.get())))
-portText.grid(columnspan=2, column=2,row=4)
+portText.grid(columnspan=2, column=2,row=6)
 
 #	Start
 startButton = ttk.Button(window,text='Start', default="active", style="active.TButton", command=start)
-startButton.grid(column=4,row=4, sticky='E')
+startButton.grid(column=4,row=6, sticky='E')
 
 #	Launch
 launchLabel = ttk.Label(window, text="Open in Browser:")
-launchLabel.grid(column=0,row=5, sticky='W', pady=(8,4))
+launchLabel.grid(column=0,row=7, sticky='W', pady=(8,4))
 launchLink = ttk.Label(window, text='', style='link.TLabel')
-launchLink.grid(column=1,row=5, sticky='W', pady=(8,4))
+launchLink.grid(column=1,row=7, sticky='W', pady=(8,4))
 launchLink.bind('<Button-1>', launchURL)
 
 #	Main
