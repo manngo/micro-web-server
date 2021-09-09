@@ -15,6 +15,7 @@ import tkinter
 from tkinter.filedialog import askdirectory
 from tkinter import messagebox, simpledialog
 from tkinter import ttk
+import tkinter.font
 
 #	Functions
 def getProjects():
@@ -39,6 +40,7 @@ def stop():
 	global startButton
 	stopServer();
 	startButton.config(text='Start',command=start)
+	launchLink.config(text='')
 
 def setFolder():
 	path = tkinter.filedialog.askdirectory(title='Serve Folder:')
@@ -52,9 +54,12 @@ def exit():
 		window.destroy()
 
 def launchURL(event):
-	host = hostText.get()
-	port = int(portText.get())
-	webbrowser.open('http://{}:{}'.format(host,port))
+	webbrowser.open(event.widget['text'])
+
+def linkify(widget):
+	widget.bind('<Button-1>', lambda event: webbrowser.open(event.widget['text']))
+	widget.bind("<Enter>", lambda event: event.widget.configure(style='link.hover.TLabel'))
+	widget.bind("<Leave>", lambda event: event.widget.configure(style='link.TLabel'))
 
 def updateProjects():
 	global saved, projects, projectsCombo
@@ -116,76 +121,120 @@ window.title('Micro Web Server')
 #window.geometry('350x200')
 window.protocol('WM_DELETE_WINDOW',exit)
 
+notebook = ttk.Notebook(window)
+notebook.pack(expand=True)
+mainFrame = ttk.Frame(notebook)
+mainFrame.pack(fill='both',expand=True)
+notebook.add(mainFrame, text='Server')
+infoFrame = ttk.Frame(notebook)
+infoFrame.pack(fill='both',expand=True)
+notebook.add(infoFrame, text='About')
+
 #	Appearance
 padding = {'padx': 8, 'pady': 2}
+
+#	Fonts
+labelFont = tkinter.font.nametofont("TkTextFont")
+labelFont.config(weight='bold', size=12)
+headingFont = labelFont.copy()
+headingFont.config(size=24)
+comboboxFont = labelFont.copy()
+comboboxFont.config(weight='normal', size=12)
+entryFont = tkinter.font.nametofont("TkFixedFont")
+entryFont.config(size=12)
+linkFont = entryFont.copy()
+linkFont.config(weight='normal', underline=False)
+linkHoverFont = entryFont.copy()
+linkHoverFont.config(weight='bold', underline=True)
+
+#	ttk Styles
+ttk.Style().configure('TLabel',foreground="#666666", font=labelFont)
+ttk.Style().configure('heading.TLabel', foreground='#133796', font=headingFont)
+ttk.Style().configure('link.TLabel',foreground='#133796',font=linkFont)
+ttk.Style().configure('link.hover.TLabel',foreground='#133796',font=linkHoverFont)
+ttk.Style().configure('TListbox',weight='normal', font=comboboxFont)
+window.option_add('*TCombobox*Listbox.font', comboboxFont)   # apply font to combobox list
+
 if sys.platform=='darwin': ttk.Style().configure('active.TButton',foreground='white')
-ttk.Style().configure('TLabel',font=("Source Sans Pro",14,'bold'),foreground="#666666")
-ttk.Style().configure('link.TLabel',foreground='#133796')
+
+#	Info
+infoLabels = [
+	ttk.Label(infoFrame, text="About Micro Web Server", style="heading.TLabel"),
+	ttk.Label(infoFrame, text="© Mark Simon"),
+	ttk.Label(infoFrame, text="Open:"),
+	ttk.Label(infoFrame, text="https://github.com/manngo/micro-web-server/", style='link.TLabel'),
+]
+infoGrid = [
+	{'column':0, 'row':0, 'columnspan':2, 'sticky':'W'},
+	{'column':0, 'row':1, 'columnspan':2, 'sticky':'W'},
+	{'column':0, 'row':2, 'sticky':'W'},
+	{'column':1, 'row':2, 'sticky':'W'},
+]
+for i,v in enumerate(infoLabels): v.grid(**infoGrid[i])
+linkify(infoLabels[3])
 
 #	Heading
-headingLabel = ttk.Label(window, text="Micro Web Server", font=("Source Sans Pro",24))
-headingLabel.grid(columnspan=2,row=0, sticky='WE')
+headingLabel = ttk.Label(mainFrame, text="Micro Web Server", style="heading.TLabel")
+headingLabel.grid(columnspan=8,row=0, sticky='WE')
 
 #	Projects
-projectsLabel = ttk.Label(window, text="Projects")
+projectsLabel = ttk.Label(mainFrame, text="Projects")
 projectsLabel.grid(column=0,row=1, sticky='W')
-projectsCombo = ttk.Combobox(window)
+projectsCombo = ttk.Combobox(mainFrame, font=comboboxFont)
 projectsCombo['state'] = 'readonly'
 updateProjects()
 projectsCombo.current(0)
 projectsCombo.grid(columnspan=3, column=0,row=2, sticky='W')
 projectsCombo.bind('<<ComboboxSelected>>',readProject)
 
-saveButton = ttk.Button(window,text='Save', command=saveProject)
-saveButton.grid(column=2,row=2, sticky='E')
-saveAsButton = ttk.Button(window,text='Save As …', command=saveAsProject)
-saveAsButton.grid(column=3,row=2, sticky='E')
-deleteButton = ttk.Button(window,text='Delete …', command=deleteProject)
-deleteButton.grid(column=4,row=2, sticky='E')
-
+saveButton = ttk.Button(mainFrame,text='Save', command=saveProject)
+saveButton.grid(column=3,row=2, sticky='E')
+saveAsButton = ttk.Button(mainFrame,text='Save As …', command=saveAsProject)
+saveAsButton.grid(column=4,row=2, sticky='E')
+deleteButton = ttk.Button(mainFrame,text='Delete …', command=deleteProject)
+deleteButton.grid(column=5,row=2, sticky='E')
 
 #	Path
-pathLabel = ttk.Label(window, text="Path")
+pathLabel = ttk.Label(mainFrame, text="Path")
 pathLabel.grid(column=0,row=3, sticky='W')
-pathText = ttk.Entry(window)
+pathText = ttk.Entry(mainFrame, font=entryFont)
 pathText.insert(0,prefs['default']['path'])
 pathText.bind('<FocusOut>', lambda event: savePrefs(path=event.widget.get()))
-pathText.grid(columnspan=4,row=4, sticky='WE')
+pathText.grid(columnspan=5,row=4, sticky='WE')
 
-pathButton = ttk.Button(window,text='Select …', command=setFolder)
-pathButton.grid(column=4,row=4, sticky='E')
+pathButton = ttk.Button(mainFrame,text='Select …', command=setFolder)
+pathButton.grid(column=5,row=4, sticky='E')
 
-
-print(prefs)
-print(prefs['default'])
-print(prefs['default']['path'])
+#print(prefs)
+#print(prefs['default'])
+#print(prefs['default']['path'])
 
 #	Host
-hostLabel = ttk.Label(window, text="Host")
+hostLabel = ttk.Label(mainFrame, text="Host")
 hostLabel.grid(column=0,row=5, sticky='W')
-hostText = ttk.Entry(window)
+hostText = ttk.Entry(mainFrame, font=entryFont)
 hostText.insert(0,prefs['default']['host'])
 hostText.bind('<FocusOut>', lambda event: savePrefs(host=event.widget.get()))
-hostText.grid(columnspan=2, column=0, row=6, sticky='W')
+hostText.grid(columnspan=3, column=0, row=6, sticky='W')
 
 #	Port
-portLabel = ttk.Label(window, text="Port")
-portLabel.grid(column=2,row=5, sticky='W',padx=8,pady=2)
-portText = ttk.Entry(window)
+portLabel = ttk.Label(mainFrame, text="Port")
+portLabel.grid(columnspan=2, column=3,row=5, sticky='W',padx=8,pady=2)
+portText = ttk.Entry(mainFrame, font=entryFont)
 portText.insert(0,prefs['default']['port'])
 portText.bind('<FocusOut>', lambda event: savePrefs(port=int(event.widget.get())))
-portText.grid(columnspan=2, column=2,row=6)
+portText.grid(columnspan=2, column=3,row=6)
 
 #	Start
-startButton = ttk.Button(window,text='Start', default="active", style="active.TButton", command=start)
-startButton.grid(column=4,row=6, sticky='E')
+startButton = ttk.Button(mainFrame,text='Start', default="active", style="active.TButton", command=start)
+startButton.grid(column=5,row=6, sticky='E')
 
 #	Launch
-launchLabel = ttk.Label(window, text="Open in Browser:")
+launchLabel = ttk.Label(mainFrame, text="Open in Browser:")
 launchLabel.grid(column=0,row=7, sticky='W', pady=(8,4))
-launchLink = ttk.Label(window, text='', style='link.TLabel')
-launchLink.grid(column=1,row=7, sticky='W', pady=(8,4))
-launchLink.bind('<Button-1>', launchURL)
+launchLink = ttk.Label(mainFrame, text='', style='link.TLabel')
+launchLink.grid(columnspan=4, column=1,row=7, sticky='W', pady=(8,4))
+linkify(launchLink)
 
 #	Main
 window.mainloop()

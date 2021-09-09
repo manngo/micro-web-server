@@ -13,6 +13,13 @@ import threading
 httpd = None
 oldpath = os.getcwd()
 
+
+def resourcePath(path):
+	try:
+		base = sys._MEIPASS
+	except Exception:
+		base = os.path.abspath('.')
+
 def loadPrefs():
 	data = {}
 	if os.path.isfile(prefsPath):

@@ -16,11 +16,11 @@ The GUI version of the server looks like this:
 
 - MacOS
 
-	<img src="misc/gui-mac.png" width="50%" alt="GUI MacOS">
+	<img src="resources/gui-mac.png" width="50%" alt="GUI MacOS">
 
 - Windows
 
-	<img src="misc/gui-windows.png" width="50%" alt="GUI Windows">
+	<img src="resources/gui-windows.png" width="50%" alt="GUI Windows">
 
 Whenever you change any of the settings, they will be saved for next time. This uses a JSON file in `~/micro-web-server/prefs.json`.
 
