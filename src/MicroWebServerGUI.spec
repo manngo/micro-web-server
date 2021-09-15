@@ -42,4 +42,4 @@ app = BUNDLE(exe,
              name='MicroWebServerGUI.app',
              icon=None,
              bundle_identifier=None,
-			 version='0.3.0')
+			 version='0.3.1')

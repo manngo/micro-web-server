@@ -4,7 +4,7 @@ An implementation of the Python Web Server
 
 This is an implementation of a Micro Web Server, based on a sample found in [https://docs.python.org/3/library/http.server.html](https://docs.python.org/3/library/http.server.html).
 
-This is not intended to be a substitute for more serious web server packages such as XAMPP or MAMP. However, it is useful if all you want to do is to develop
+This is not intended to be a substitute for more serious web server packages such as [XAMPP](https://www.apachefriends.org/index.html) or [MAMP](https://www.mamp.info/en/mac/). However, it is useful if all you want to do is to develop in HTML, CSS or JavaScript.
 
 See [https://internotes.net/simple-web-server](https://internotes.net/simple-web-server) for a discussion on why this is useful.
 
