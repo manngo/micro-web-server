@@ -25,16 +25,16 @@ def getProjects():
 
 def start():
 	global startButton, launchLink, prefs
-	startButton.config(text='Stop',command=stop)
-	#startButton
 	path = pathText.get()
 	host = hostText.get()
 	port = int(portText.get())
-	#prefs = {'path': path, 'host': host, 'port': port}
-	os.chdir(path)
-	startServer(path,host,port,True);
-	#savePrefs()
-	launchLink.config(text='http://{}:{}'.format(host,port))
+	try:
+		os.chdir(path)
+		startServer(path,host,port,True);
+		launchLink.config(text='http://{}:{}'.format(host,port))
+		startButton.config(text='Stop',command=stop)
+	except OSError as e:
+		messagebox.showerror(title='Path not Found',message=f'There is no directory at:\n\n{path}\n\nThe Server cannot be started')
 
 def stop():
 	global startButton
@@ -80,7 +80,11 @@ def saveAsProject(name=None):
 	projectsCombo.current(projectsCombo['values'].index(name))
 
 def saveProject():
-	saveAsProject(projectsCombo.get())
+	if projectsCombo.current() == 0:	#	Can’t delete default
+		prefs['default'] = {'path': pathText.get(), 'host': hostText.get(), 'port': int(portText.get())}
+		savePrefs()
+	else:
+		saveAsProject(projectsCombo.get())
 
 def deleteProject():
 	if projectsCombo.current() == 0: return	#	Can’t delete default
@@ -108,6 +112,11 @@ def loadProject():
 def readProject(event):
 	loadProject()
 	pass
+
+def addShortcutKeys(entry):
+	def selectAll(event):
+		event.widget.select_range(0,'end')
+	entry.bind('<Control-a>',selectAll)
 
 #	Initialise
 oldpath = os.getcwd()
@@ -199,22 +208,20 @@ pathLabel = ttk.Label(mainFrame, text="Path")
 pathLabel.grid(column=0,row=3, sticky='W')
 pathText = ttk.Entry(mainFrame, font=entryFont)
 pathText.insert(0,prefs['default']['path'])
-pathText.bind('<FocusOut>', lambda event: savePrefs(path=event.widget.get()))
+#	pathText.bind('<FocusOut>', lambda event: savePrefs(path=event.widget.get()))
 pathText.grid(columnspan=5,row=4, sticky='WE')
+addShortcutKeys(pathText)
+
 
 pathButton = ttk.Button(mainFrame,text='Select …', command=setFolder)
 pathButton.grid(column=5,row=4, sticky='E')
-
-#print(prefs)
-#print(prefs['default'])
-#print(prefs['default']['path'])
 
 #	Host
 hostLabel = ttk.Label(mainFrame, text="Host")
 hostLabel.grid(column=0,row=5, sticky='W')
 hostText = ttk.Entry(mainFrame, font=entryFont)
 hostText.insert(0,prefs['default']['host'])
-hostText.bind('<FocusOut>', lambda event: savePrefs(host=event.widget.get()))
+#	hostText.bind('<FocusOut>', lambda event: savePrefs(host=event.widget.get()))
 hostText.grid(columnspan=3, column=0, row=6, sticky='W')
 
 #	Port
@@ -222,7 +229,7 @@ portLabel = ttk.Label(mainFrame, text="Port")
 portLabel.grid(columnspan=2, column=3,row=5, sticky='W',padx=8,pady=2)
 portText = ttk.Entry(mainFrame, font=entryFont)
 portText.insert(0,prefs['default']['port'])
-portText.bind('<FocusOut>', lambda event: savePrefs(port=int(event.widget.get())))
+#	portText.bind('<FocusOut>', lambda event: savePrefs(port=int(event.widget.get())))
 portText.grid(columnspan=2, column=3,row=6)
 
 #	Start

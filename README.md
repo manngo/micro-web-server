@@ -22,7 +22,7 @@ The GUI version of the server looks like this:
 
 	<img src="resources/gui-windows.png" width="50%" alt="GUI Windows">
 
-Whenever you change any of the settings, they will be saved for next time. This uses a JSON file in `~/micro-web-server/prefs.json`.
+You can save the settings for next time. This uses a JSON file in `~/micro-web-server/prefs.json`.
 
 ### Basic Settings
 
@@ -101,11 +101,6 @@ Note:
 ### Launching the Web Browser
 
 If you include the __go__ option (`-g` or `--go`), your site will open up in your default web browser, after a delay of a few seconds.
-
-## TODO
-
-2. Tabbed Interface with About etc
-
 
 ## E&OE
 
