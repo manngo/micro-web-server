@@ -1,8 +1,10 @@
 # Micro Web Server
 
-An implementation of the Python Web Server
+A simple web server for static files. This is suitable for front-end development of HTML, CSS and JavaScript.
 
-This is an implementation of a Micro Web Server, based on a sample found in [https://docs.python.org/3/library/http.server.html](https://docs.python.org/3/library/http.server.html).
+This is built on Python’s built in web server, based on a sample found in [https://docs.python.org/3/library/http.server.html](https://docs.python.org/3/library/http.server.html).
+
+_You do not need Python installed._
 
 This is not intended to be a substitute for more serious web server packages such as [XAMPP](https://www.apachefriends.org/index.html) or [MAMP](https://www.mamp.info/en/mac/). However, it is useful if all you want to do is to develop in HTML, CSS or JavaScript.
 
