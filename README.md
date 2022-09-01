@@ -1,5 +1,7 @@
 # Micro Web Server
 
+Download: [https://github.com/manngo/micro-web-server/releases/latest](https://github.com/manngo/micro-web-server/releases/latest)
+
 A simple web server for static files. This is suitable for front-end development of HTML, CSS and JavaScript.
 
 This is built on Python’s built in web server, based on a sample found in [https://docs.python.org/3/library/http.server.html](https://docs.python.org/3/library/http.server.html).
