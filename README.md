@@ -106,6 +106,12 @@ Note:
 
 If you include the __go__ option (`-g` or `--go`), your site will open up in your default web browser, after a delay of a few seconds.
 
+##	Privacy Policy
+
+We don’t know who your are, we don’t want to know, and, with respect, we don’t really care.
+
+We can’t help what GitHub wants to know about you, but MicroWeb Server knows nothing, and refuses to pry into your personal details. That is, we don’t collect any information, and we certainly have no interest in passing such information to any other parties.
+
 ## E&OE
 
 This application is still in an early stage. It does what it does and doesn’t do what it doesn’t do.
